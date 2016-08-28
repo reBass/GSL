@@ -3,17 +3,18 @@ cmake_minimum_required(VERSION 2.8.7)
 project(GSL CXX)
 
 set(GSL_HEADERS
-    "gsl/gsl"
-    "gsl/gsl_assert"
-    "gsl/gsl_byte"
-    "gsl/gsl_util"
-    "gsl/multi_span"
-    "gsl/span"
-    "gsl/string_span"
+    "include/gsl/gsl"
+    "include/gsl/gsl_assert"
+    "include/gsl/gsl_byte"
+    "include/gsl/gsl_util"
+    "include/gsl/multi_span"
+    "include/gsl/span"
+    "include/gsl/string_span"
 )
 
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
+    include
 )
 
 install(FILES ${GSL_HEADERS}
