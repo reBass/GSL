@@ -12,6 +12,9 @@ set(GSL_HEADERS
     "include/gsl/string_span"
 )
 
+add_library(gsl INTERFACE)
+target_include_directories(gsl INTERFACE include)
+
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
     include
