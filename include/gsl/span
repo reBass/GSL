@@ -451,6 +451,16 @@ public:
     }
 
     template <
+        std::ptrdiff_t OtherExtent,
+        class = std::enable_if_t<
+            details::is_allowed_extent_conversion<OtherExtent, Extent>::value>>
+    constexpr span(const span<element_type, OtherExtent>& other)
+        : storage_(reinterpret_cast<pointer>(other.data()),
+                   details::extent_type<OtherExtent>(other.size()))
+    {
+    }
+
+    template <
         class OtherElementType, std::ptrdiff_t OtherExtent,
         class = std::enable_if_t<
             details::is_allowed_extent_conversion<OtherExtent, Extent>::value &&
@@ -488,20 +498,20 @@ public:
         return {data() + (size() - Count), Count};
     }
 
-    template <std::ptrdiff_t Offset, std::ptrdiff_t Count = dynamic_extent>
-    constexpr span<element_type, Count> subspan() const
-    {
-        Expects((Offset == 0 || (Offset > 0 && Offset <= size())) &&
-                (Count == dynamic_extent || (Count >= 0 && Offset + Count <= size())));
-        return {data() + Offset, Count == dynamic_extent ? size() - Offset : Count};
-    }
-
     template <std::ptrdiff_t Count>
     constexpr span<element_type, Count> subspan(index_type offset) const
     {
         Expects((offset == 0 || (offset > 0 && offset <= size())) &&
                 (Count == dynamic_extent || (Count >= 0 && offset + Count <= size())));
         return {data() + offset, Count == dynamic_extent ? size() - offset : Count};
+    }
+
+    template <std::ptrdiff_t Offset, std::ptrdiff_t Count>
+    constexpr span<element_type, Count> subspan() const
+    {
+        Expects((Offset == 0 || (Offset > 0 && Offset <= size())) &&
+                (Count == dynamic_extent || (Count >= 0 && Offset + Count <= size())));
+        return {data() + Offset, Count == dynamic_extent ? size() - Offset : Count};
     }
 
     constexpr span<element_type, dynamic_extent> first(index_type count) const
@@ -517,7 +527,7 @@ public:
     }
 
     constexpr span<element_type, dynamic_extent> subspan(index_type offset,
-                                                         index_type count = dynamic_extent) const
+                                                         index_type count) const
     {
         Expects((offset == 0 || (offset > 0 && offset <= size())) &&
                 (count == dynamic_extent || (count >= 0 && offset + count <= size())));
