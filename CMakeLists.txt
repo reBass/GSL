@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 2.8.7)
+cmake_minimum_required(VERSION 3.4)
 
-project(GSL CXX)
+project(GSL VERSION 1.0.0 LANGUAGES CXX)
 
 set(GSL_HEADERS
     "include/gsl/gsl"
@@ -27,3 +27,4 @@ install(FILES ${GSL_HEADERS}
 enable_testing()
 
 add_subdirectory(tests)
+
