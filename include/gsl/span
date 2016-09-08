@@ -506,6 +506,7 @@ public:
         return {data() + offset, Count == dynamic_extent ? size() - offset : Count};
     }
 
+
     template <std::ptrdiff_t Offset, std::ptrdiff_t Count>
     constexpr span<element_type, Count> subspan() const
     {
@@ -527,7 +528,7 @@ public:
     }
 
     constexpr span<element_type, dynamic_extent> subspan(index_type offset,
-                                                         index_type count) const
+                                                         index_type count = dynamic_extent) const
     {
         Expects((offset == 0 || (offset > 0 && offset <= size())) &&
                 (count == dynamic_extent || (count >= 0 && offset + count <= size())));
@@ -674,6 +675,69 @@ constexpr ElementType& at(const span<ElementType ,Extent>& s, size_t index)
     // No bounds checking here because it is done in span::operator[] called below
     return s[index];
 }
+
+template <
+    std::ptrdiff_t Count,
+    typename ElementType,
+    std::ptrdiff_t Extent,
+    typename = std::enable_if_t<std::is_const<ElementType>::value>
+>
+constexpr span<ElementType const, Count>
+subspan(const span<ElementType, Extent>& s, std::ptrdiff_t offset) {
+    return {
+        s.data() + offset,
+        Count == dynamic_extent ? s.size() - offset : Count
+    };
+}
+
+template <
+    std::ptrdiff_t Count,
+    typename ElementType,
+    std::ptrdiff_t Extent,
+    typename = std::enable_if_t<!std::is_const<ElementType>::value>
+>
+constexpr span<ElementType, Count>
+subspan(const span<ElementType, Extent>& s, std::ptrdiff_t offset) {
+    Expects((offset == 0 || (offset > 0 && offset <= s.size())) &&
+            (Count == dynamic_extent || (Count >= 0 && offset + Count <= s.size())));
+    return {
+        s.data() + offset,
+        Count == dynamic_extent ? s.size() - offset : Count
+    };
+}
+
+template <
+    std::ptrdiff_t Offset,
+    std::ptrdiff_t Count,
+    typename ElementType,
+    std::ptrdiff_t Extent,
+    typename = std::enable_if_t<std::is_const<ElementType>::value>
+>
+constexpr span<ElementType const, Count>
+subspan(const span<ElementType, Extent>& s) {
+    return {
+        s.data() + Offset,
+        Count == dynamic_extent ? s.size() - Offset : Count
+    };
+}
+
+template <
+    std::ptrdiff_t Offset,
+    std::ptrdiff_t Count,
+    typename ElementType,
+    std::ptrdiff_t Extent,
+    typename = std::enable_if_t<!std::is_const<ElementType>::value>
+>
+constexpr span<ElementType, Count>
+subspan(const span<ElementType, Extent>& s) {
+    Expects((Offset == 0 || (Offset > 0 && Offset <= s.size())) &&
+            (Count == dynamic_extent || (Count >= 0 && Offset + Count <= s.size())));
+    return {
+        s.data() + Offset,
+        Count == dynamic_extent ? s.size() - Offset : Count
+    };
+}
+
 
 } // namespace gsl
 
